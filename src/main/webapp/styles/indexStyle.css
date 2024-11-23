@@ -1,0 +1,67 @@
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+}
+
+
+.emissions-table th, .emissions-table td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.emissions-table th {
+    background-color: #f7f7f7;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.login-button {
+    background-color: #ffffff;
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.county-column {
+    width: 150px;
+}
+
+/* Flexbox-Container für die zwei Panel-Gruppen */
+.panels-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Abstand zwischen den Panels */
+    margin-top: 20px;
+}
+
+.line-chart-panel {
+    flex: 4; /* 80% Breite */
+}
+
+.total-emissions-panel {
+    flex: 1; /* 20% Breite */
+}
+
+.content {
+    margin: 20px;
+}

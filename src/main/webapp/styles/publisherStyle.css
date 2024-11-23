@@ -1,0 +1,22 @@
+.sticky-column {
+    position: sticky;
+    left: 0;
+    background: white; /* Hintergrundfarbe zum Vermeiden von Überlappungen */
+    z-index: 1;
+    width: 180px; /* Breite der Länderspalte */
+}
+
+.ml-4 {
+    margin-left: 1rem;
+}
+
+.table-position {
+    display: flex;
+    justify-content: center;
+}
+
+.panel-group-position {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}

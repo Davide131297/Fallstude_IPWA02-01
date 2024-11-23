@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+   <title>Like Hero To Zero - Scientist Page</title>
+   <link rel="stylesheet" type="text/css" href="styles/globalStyle.css" />
+   <h:outputText value="#{loginController.checkLoginScientist()}"/>
+</h:head>
+<h:body>
+   <div class="navbar">
+      <h1 class="title">Like Hero To Zero - Scientist Page</h1>
+      <h:form>
+         <p:commandButton value="Logout" action="#{loginController.logout()}" ajax="false"/>
+      </h:form>
+   </div>
+
+   <p:growl id="messages" showDetail="true" />
+
+   <p:panel header="Search CO₂ Emissions by Country" style="margin-bottom: 10px">
+      <p:fieldset legend="Search">
+         <h:form id="searchForm">
+            <p:inputText id="countrySearch" value="#{emissionsWorker.searchCountry}" placeholder="Enter country name" style="margin-right: 5px"/>
+            <p:commandButton value="Search" actionListener="#{emissionsWorker.filterByCountry}" update=":dataTableForm:dataTable, :messages"/>
+         </h:form>
+      </p:fieldset>
+   </p:panel>
+
+   <p:panel header="Emissions Data" id="emissionsDataTable" style="margin-bottom: 10px">
+      <h:form id="dataTableForm">
+         <p:dataTable id="dataTable" value="#{emissionsWorker.searchedEmissions}"
+                      var="countryEntry"
+                      emptyMessage="No data available"
+                      style="font-size: 12px;"
+                      scrollable="true" scrollWidth="100%" scrollHeight="200"
+                      stripedRows="true">
+
+            <!-- Land-Spalte -->
+            <p:column headerText="Country">
+               <h:outputText value="#{countryEntry.key}" />
+            </p:column>
+
+            <!-- Dynamische Spalten für jedes Jahr -->
+            <p:columns value="#{emissionsWorker.years}" var="year" columnIndexVar="colIndex">
+               <f:facet name="header">
+                  <h:outputText value="#{year}" />
+               </f:facet>
+               <h:outputText value="#{countryEntry.value[year]}" />
+            </p:columns>
+
+         </p:dataTable>
+      </h:form>
+   </p:panel>
+
+   <p:panel header="Add Data" style="margin-bottom: 10px">
+      <p:fieldset legend="Add Data">
+         <h:form id="addDataForm">
+            <!-- SelectOneMenu for countries -->
+            <p:selectOneMenu id="country" value="#{emissionsWorker.countryId}" style="margin-right: 5px">
+               <f:selectItem itemLabel="Select a Country" itemValue="" />
+               <f:selectItems value="#{emissionsWorker.countries}" var="country"
+                              itemLabel="#{country.name}" itemValue="#{country.id}" />
+               <f:ajax event="change" render="countryName" listener="#{emissionsWorker.updateCountryName}" />
+            </p:selectOneMenu>
+
+            <!-- Hidden input for countryName -->
+            <h:inputHidden id="countryName" value="#{emissionsWorker.countryName}" />
+
+            <!-- Year and Emission -->
+            <p:inputMask id="year" value="#{emissionsWorker.year}" mask="9999" placeholder="Enter year" style="margin-right: 5px"/>
+            <p:inputNumber id="emission" value="#{emissionsWorker.emission}" placeholder="Enter emission" style="margin-right: 5px"/>
+
+            <p:commandButton value="Add Data" actionListener="#{emissionsWorker.saveEmission}" update="addDataForm :messages"/>
+         </h:form>
+
+      </p:fieldset>
+   </p:panel>
+</h:body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+>
+<h:head>
+    <title>Like Hero To Zero - Publisher Page</title>
+    <link rel="stylesheet" type="text/css" href="styles/globalStyle.css" />
+    <link rel="stylesheet" type="text/css" href="styles/publisherStyle.css" />
+    <h:outputText value="#{loginController.checkLoginPublisher()}"/>
+</h:head>
+<body>
+    <!-- Hauptformular für die gesamte Seite -->
+    <h:form id="mainForm">
+        <p:growl id="message" showDetail="true" />
+
+        <div class="navbar">
+            <h1 class="title">Like Hero To Zero - Dashboard Publisher</h1>
+            <div style="margin-right: 30px; gap: 30px; cursor: pointer">
+                <!-- Dynamische Anzeige des Badges basierend auf pendingRequestsCount -->
+                <p:badge id="headerBadgeRegister" value="#{registerRequestDAO.countPendingRegisterRequests()}"
+                         style="#{registerRequestDAO.countPendingRegisterRequests() > 0 ? '' : 'display:none;'}">
+                    <i class="pi pi-user-plus" style="font-size: larger;" onclick="PF('dlg1').show()" />
+                </p:badge>
+
+                <p:badge id="headerBadgeUpdate" value="#{requestUpdateDataDAO.pendingRequestsCount}"
+                         style="#{requestUpdateDataDAO.pendingRequestsCount > 0 ? '' : 'display:none;'}">
+                    <i class="pi pi-envelope ml-4" style="font-size: larger;" onclick="PF('dlg2').show()"/>
+                </p:badge>
+            </div>
+            <p:commandButton value="Logout" action="#{loginController.logout()}" ajax="false"/>
+        </div>
+
+        <!-- Große Tabelle für die CO₂-Emissionsdaten -->
+        <h:panelGroup layout="block" styleClass="table-position">
+            <p:panel header="CO₂ emissions in MtCO2e">
+                <p:dataTable
+                        id="emissionsTable"
+                        value="#{emissionsWorker.filteredPivotedCo2Data}"
+                        var="countryEntry"
+                        emptyMessage="No data available"
+                        style="font-size: small;"
+                        showGridlines="true"
+                        scrollable="true" scrollWidth="95%" scrollHeight="250"
+                        size="small"
+                        filterDelay="300"
+                        lazy="false"
+                        filteredValue="#{emissionsWorker.filteredPivotedCo2Data}">
+
+                    <!-- Land-Spalte mit Suchfeld -->
+                    <p:column headerText="Country" styleClass="sticky-column" filterBy="#{countryEntry.key}" filterMatchMode="contains">
+                        <h:outputText value="#{countryEntry.key}" />
+                    </p:column>
+
+                    <!-- Dynamische Spalten für jedes Jahr -->
+                    <p:columns value="#{emissionsWorker.years}" var="year" columnIndexVar="colIndex">
+                        <f:facet name="header">
+                            <h:outputText value="#{year}" />
+                        </f:facet>
+                        <h:outputText value="#{countryEntry.value[year]}" />
+                    </p:columns>
+                </p:dataTable>
+            </p:panel>
+        </h:panelGroup>
+
+        <!-- Panel Group Liniendiagram und Gesamtemissionen -->
+        <h:panelGroup layout="block" styleClass="panel-group-position">
+            <h:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" style="width: 100%;">
+                <p:panel header="Top 5 countries - CO₂ emissions over the years" style="width: 100%;">
+                    <!-- Liniendiagramm für die obersten 5 Länder -->
+                    <p:chart type="line" model="#{emissionsWorker.top5CountriesModel}" />
+                </p:panel>
+
+                <p:panel header="Total emissions by country">
+                    <!-- Tabelle für Gesamtemissionen -->
+                    <p:dataTable value="#{emissionsWorker.filteredPivotedCo2Data}"
+                                 var="countryEntry"
+                                 emptyMessage="Keine Daten verfügbar"
+                                 style="font-size: small;"
+                                 stripedRows="true"
+                                 paginator="true"
+                                 rows="5"
+                                 paginatorPosition="bottom"
+                                 size="small">
+
+                        <!-- Land-Spalte mit Suchfeld und Sortierfunktion -->
+                        <p:column headerText="Country"
+                                  sortBy="#{countryEntry.key}"
+                                  filterBy="#{countryEntry.key}"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{countryEntry.key}" />
+                        </p:column>
+
+                        <!-- Spalte für Gesamtemissionen mit Sortierfunktion -->
+                        <p:column headerText="Total emissions (MtCO2e)" sortBy="#{emissionsWorker.getTotalEmissionsValue(countryEntry.key)}">
+                            <h:outputText value="#{emissionsWorker.getTotalEmissionsFormatted(countryEntry.key)}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </h:panelGrid>
+        </h:panelGroup>
+
+        <!-- Dialog für Registrierungsanfragen -->
+        <p:dialog header="Register Requests" widgetVar="dlg1" minHeight="40" width="600" showEffect="fade" closeOnEscape="true">
+
+            <p:dataTable
+                    id="registerRequestsTable"
+                    value="#{registerRequestDAO.allPendingRegisterRequests}"
+                    var="registerRequest"
+                    emptyMessage="No pending requests"
+                    style="width:100%;">
+                <p:column headerText="Username">
+                    <h:outputText value="#{registerRequest.username}" />
+                </p:column>
+                <p:column headerText="Action" style="display: flex; gap: 5px;">
+                    <p:commandButton
+                            value="Confirm"
+                            action="#{registerRequestDAO.acceptRequest(registerRequest)}"
+                            styleClass="mr-2"
+                            icon="pi pi-check"
+                            update="@form:message @form:registerRequestsTable @form:headerBadgeRegister" />
+                    <p:commandButton
+                            value="Decline"
+                            action="#{registerRequestDAO.declineRequest(registerRequest)}"
+                            styleClass="ui-button-danger mr-2"
+                            icon="pi pi-times"
+                            update="@form:message @form:registerRequestsTable @form:headerBadgeRegister" />
+                </p:column>
+            </p:dataTable>
+        </p:dialog>
+
+        <!-- Dialog für Update-Anfragen -->
+        <p:dialog header="Update Requests" widgetVar="dlg2" minHeight="40" width="800" showEffect="fade" closeOnEscape="true">
+            <p:dataTable
+                    id="updateRequestsTable"
+                    value="#{requestUpdateDataDAO.allPendingRequests}"
+                    var="requestUpdateData"
+                    emptyMessage="No pending requests"
+                    scrollable="true" scrollHeight="400"
+                    size="small"
+                    style="width:100%;">
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Username" />
+                    </f:facet>
+                    <h:outputText value="#{requestUpdateData.fromUser}" />
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Country" />
+                    </f:facet>
+                    <h:outputText value="#{requestUpdateData.country_name}" />
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Year" />
+                    </f:facet>
+                    <h:outputText value="#{requestUpdateData.year}" />
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Emissions" />
+                    </f:facet>
+                    <h:outputText value="#{requestUpdateData.emissions}">
+                        <f:convertNumber integerOnly="true" />
+                    </h:outputText>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Action" />
+                    </f:facet>
+                    <div style="display: flex; gap: 5px;">
+                        <p:commandButton
+                                icon="pi pi-check" styleClass="rounded-button ui-button-success"
+                                action="#{requestUpdateDataDAO.acceptRequest(requestUpdateData)}"
+                                update="@form:message @form:updateRequestsTable @form:emissionsTable @form:headerBadgeUpdate"
+                        />
+                        <p:commandButton
+                                icon="pi pi-times" styleClass="rounded-button ui-button-danger"
+                                action="#{requestUpdateDataDAO.declineRequest(requestUpdateData)}"
+                                update="@form:message @form:updateRequestsTable @form:emissionsTable @form:headerBadgeUpdate"
+                        />
+                    </div>
+                </p:column>
+            </p:dataTable>
+        </p:dialog>
+
+        <p:confirmDialog widgetVar="confirmUpdateDialog" header="Update data"
+                         message="This record already exists. Do you want to update it?"
+                         severity="warn" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" action="#{requestUpdateDataDAO.updateData}"
+                             oncomplete="PF('confirmUpdateDialog').hide()" update="@form" />
+            <p:commandButton value="No" onclick="PF('confirmUpdateDialog').hide()" type="button" />
+        </p:confirmDialog>
+    </h:form>
+</body>
+</html>

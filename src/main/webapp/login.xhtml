@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Like Hero To Zero - Login</title>
+    <link rel="stylesheet" type="text/css" href="styles/globalStyle.css" />
+    <link rel="stylesheet" type="text/css" href="styles/loginStyle.css" />
+</h:head>
+<h:body>
+<div class="navbar">
+    <h1 class="title">Like Hero To Zero - Login</h1>
+</div>
+<div class="centered-form">
+    <h:form>
+        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+
+        <p:panel header="Login">
+            <p:outputLabel for="userBean" value="Username:" />
+            <br />
+            <p:inputText id="userBean" value="#{loginController.username}">
+                    <f:event type="postValidate" listener="#{loginController.postValidateUser}" />
+            </p:inputText>
+            <br />
+            <br />
+            <p:outputLabel for="password" value="Password:" />
+            <br />
+            <p:password id="password" value="#{loginController.password}" size="40"
+                           validator="#{loginController.validateLogin}" toggleMask="true"
+            />
+
+            <div class="login-form-buttons">
+                <p:commandButton value="Back" action="#{loginController.goBack}" styleClass="ui-button-secondary" ajax="false" immediate="true"/>
+                <p:commandButton value="Login" action="#{loginController.login}"  update="messages" oncomplete="if (args.status === 'failure') PF('messages').show();" />
+            </div>
+
+            <div style="margin-top: 10px">
+                <p:outputLabel value="Don't have an account yet?"/>
+                <p:commandLink value="Register now" action="#{loginController.goToRegister}" ajax="false" immediate="true"/>
+            </div>
+        </p:panel>
+    </h:form>
+</div>
+</h:body>
+</html>

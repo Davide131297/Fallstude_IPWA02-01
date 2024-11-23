@@ -1,0 +1,17 @@
+.navbar {
+    background-color: #4CAF50; /* Grüner Hintergrund */
+    color: white; /* Weiße Schriftfarbe */
+    padding: 10px 20px; /* Innenabstand */
+    display: flex; /* Verwende Flexbox */
+    align-items: center; /* Zentriere Elemente vertikal */
+    justify-content: space-between; /* Abstand zwischen den Elementen */
+    margin-bottom: 20px; /* Abstand zum unteren Rand */
+}
+
+.title {
+    flex-grow: 1; /* Lässt Titel wachsen, um Platz zu füllen */
+    text-align: center; /* Zentriere den Titel */
+    font-size: 24px; /* Schriftgröße des Titels */
+    color: white; /* Weiße Schriftfarbe für den Titel */
+    margin: 0; /* Entferne Außenabstand für bessere Ausrichtung */
+}
