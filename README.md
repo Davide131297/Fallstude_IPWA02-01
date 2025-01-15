@@ -1,4 +1,4 @@
-# WEBANWENDUNG mit Jakarta EE
+# Webanwendung mit Jakarta EE
 
 Das Projekt wurde nach agilen Prinzipien konfiguriert und basiert auf dem Technologiestack
 JavaServer Faces (JSF), PrimeFaces Komponenten und Contexts and Dependency Injection
